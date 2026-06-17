@@ -1,0 +1,7 @@
+{
+  "dependencies": ["."],
+  "graphs": {
+    "burry": "./src/burry/graph.py:graph"
+  },
+  "env": ".env"
+}

@@ -1,0 +1,17 @@
+# Core orchestration
+langgraph>=0.2.40
+langchain>=0.3.0
+langchain-core>=0.3.0
+
+# LLM providers (configurable — see src/burry/models.py)
+langchain-anthropic>=0.3.0
+langchain-openai>=0.2.0
+
+# Market data + execution
+alpaca-py>=0.33.0
+finnhub-python>=2.4.20
+
+# Config / utils
+pydantic>=2.0
+pydantic-settings>=2.0
+python-dotenv>=1.0

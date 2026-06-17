@@ -1,0 +1,19 @@
+[project]
+name = "burry"
+version = "0.1.0"
+description = "Multi-agent trading orchestrator for Alpaca, built on LangGraph"
+requires-python = ">=3.11"
+dynamic = ["dependencies"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"burry.prompts" = ["*.md"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
