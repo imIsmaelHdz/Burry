@@ -87,9 +87,27 @@ p.temperature   # 0.2
 p.render(ticker="AAPL")   # optional {placeholder} substitution
 ```
 
-Current prompts: `technical_research.md`, `macro_research.md`, `critic.md`.
-To add a new agent, drop a `.md` file in the folder and `load_prompt("<name>")`
-— no code change to the loader.
+Current prompts: `technical_research.md`, `macro_research.md`, `critic.md`,
+`massive_research.md`. To add a new agent, drop a `.md` file in the folder and
+`load_prompt("<name>")` — no code change to the loader.
+
+## Optional: Massive research step
+
+[Massive.com](https://massive.com) is a financial market-data API. It's wired in
+as an **optional third research agent** that runs in parallel with Technical &
+Macro and gives the critic a cross-asset "second opinion" (OHLC bars, news with
+sentiment, fundamentals, macro indicators).
+
+It is **off by default** — the base flow is unchanged. To enable:
+
+```bash
+# in .env
+ENABLE_MASSIVE=true
+MASSIVE_API_KEY=...
+```
+
+When enabled, `graph.py` adds the `massive` node to the fan-out and the critic
+folds its analysis in. When disabled, none of the Massive code is imported.
 
 ## Run
 

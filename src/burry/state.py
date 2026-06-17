@@ -27,10 +27,14 @@ class TradingState(TypedDict, total=False):
     sentiment: dict[str, Any]
     finnhub: dict[str, Any]
 
-    # Research (the two agents run in parallel, distinct keys so
+    # Research (the agents run in parallel, distinct keys so
     # there is no write conflict at the fan-in)
     technical_analysis: str
     macro_analysis: str
+
+    # Optional Massive research step (only populated when ENABLE_MASSIVE)
+    massive_data: dict[str, Any]
+    massive_analysis: str
 
     # Critic / Risk
     investment_memo: str

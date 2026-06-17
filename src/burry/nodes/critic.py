@@ -43,6 +43,9 @@ def critic_review(state: TradingState) -> TradingState:
         "technical_analysis": state.get("technical_analysis"),
         "macro_analysis": state.get("macro_analysis"),
     }
+    # Optional Massive second-opinion, included only when that step ran.
+    if state.get("massive_analysis"):
+        payload["massive_analysis"] = state["massive_analysis"]
     result: _Memo = llm.invoke(
         [
             SystemMessage(content=prompt.text),

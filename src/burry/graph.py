@@ -7,9 +7,9 @@
       │
       ├──────────────┐         parallel research
       ▼              ▼
-    technical      macro
-      │              │
-      └──────┬───────┘
+    technical      macro      (massive)   ← optional, ENABLE_MASSIVE
+      │              │            │
+      └──────┬───────┴────────────┘
              ▼
           critic ────────────► investment memo + hardcoded risk limits
              │
@@ -29,6 +29,7 @@ from __future__ import annotations
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, START, StateGraph
 
+from .config import get_settings
 from .nodes.approval import human_approval, route_after_approval
 from .nodes.critic import critic_review
 from .nodes.execution import execute
@@ -38,6 +39,7 @@ from .state import TradingState
 
 
 def build_graph():
+    settings = get_settings()
     g = StateGraph(TradingState)
 
     g.add_node("ingestion", ingest)
@@ -49,13 +51,22 @@ def build_graph():
 
     g.add_edge(START, "ingestion")
 
-    # Fan out to the two research agents (run in parallel)…
+    # Fan out to the research agents (run in parallel)…
     g.add_edge("ingestion", "technical")
     g.add_edge("ingestion", "macro")
 
-    # …and fan back in to the critic (waits for both).
+    # …and fan back in to the critic (waits for all of them).
     g.add_edge("technical", "critic")
     g.add_edge("macro", "critic")
+
+    # Optional extra research step: Massive runs as a third parallel agent only
+    # when enabled. Off by default, so the base flow is untouched.
+    if settings.enable_massive:
+        from .nodes.massive_research import massive_research
+
+        g.add_node("massive", massive_research)
+        g.add_edge("ingestion", "massive")
+        g.add_edge("massive", "critic")
 
     g.add_edge("critic", "human_approval")
 

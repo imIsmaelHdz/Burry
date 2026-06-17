@@ -31,6 +31,10 @@ class Settings(BaseSettings):
     # Market Data
     finnhub_api_key: str | None = None
 
+    # Massive (optional extra research step — off unless explicitly enabled)
+    massive_api_key: str | None = None
+    enable_massive: bool = False
+
     # Risk Limits
     max_position_pct: float = 0.10
     max_notional_per_order: float = 10_000.0
