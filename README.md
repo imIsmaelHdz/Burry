@@ -6,29 +6,51 @@ risk limits always.
 
 ## Pipeline
 
+```mermaid
+flowchart TD
+    START([▶ Start]) --> ING
+
+    ING["📥 <b>Data Ingestion</b><br/><i>Alpaca OHLCV · news sentiment · Finnhub</i>"]
+
+    ING --> TECH["📈 <b>Technical Research</b>"]
+    ING --> MACRO["🌐 <b>Macro Research</b>"]
+    ING -. "ENABLE_MASSIVE" .-> MASSIVE["🛰️ <b>Massive Research</b><br/><i>optional second opinion</i>"]
+
+    TECH --> CRITIC
+    MACRO --> CRITIC
+    MASSIVE -.-> CRITIC
+
+    CRITIC["🧮 <b>Critic / Risk</b><br/><i>Investment Memo + hardcoded portfolio limits</i>"]
+    CRITIC --> GATE{{"🙋 <b>Human Approval Gate</b><br/>graph pauses — LangGraph interrupt"}}
+
+    GATE -- "✅ approved & risk passed" --> EXEC["🚀 <b>Alpaca Execution</b><br/><i>places orders &amp; tracks fills</i>"]
+    GATE -- "⛔ rejected / risk fail" --> DONE
+    EXEC --> DONE([⏹ End])
+
+    subgraph RESEARCH [" parallel research agents "]
+        direction LR
+        TECH
+        MACRO
+        MASSIVE
+    end
+
+    classDef ingest   fill:#1e3a5f,stroke:#3b82f6,color:#e0f2fe;
+    classDef research fill:#14532d,stroke:#22c55e,color:#dcfce7;
+    classDef critic   fill:#4c1d95,stroke:#a78bfa,color:#ede9fe;
+    classDef gate     fill:#78350f,stroke:#f59e0b,color:#fef3c7;
+    classDef exec     fill:#7f1d1d,stroke:#ef4444,color:#fee2e2;
+    classDef terminal fill:#1f2937,stroke:#9ca3af,color:#f3f4f6;
+
+    class ING ingest;
+    class TECH,MACRO,MASSIVE research;
+    class CRITIC critic;
+    class GATE gate;
+    class EXEC exec;
+    class START,DONE terminal;
 ```
-Start
-  │
-  ▼
-Data Ingestion ──────► Alpaca OHLCV · news sentiment · Finnhub fundamentals
-  │
-  ├──────────────┐     parallel, independent AI researchers
-  ▼              ▼
-Technical      Macro
-  └──────┬───────┘
-         ▼
-Critic / Risk ───────► compiles Investment Memo + checks hardcoded portfolio limits
-         │
-         ▼
-Human Approval Gate ─► graph PAUSES here (LangGraph interrupt) until you approve
-         │
-   (approved & risk passed)
-         ▼
-Alpaca Execution ────► places orders & tracks results
-         │
-         ▼
-        End
-```
+
+> The **Massive Research** node (dotted) only joins the fan-out when
+> `ENABLE_MASSIVE=true`; otherwise the pipeline runs Technical + Macro only.
 
 ## Layout
 
