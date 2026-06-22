@@ -68,6 +68,14 @@ def build_graph():
         g.add_edge("ingestion", "massive")
         g.add_edge("massive", "critic")
 
+    # Optional crypto research step: Binance Futures F1-F5 protocol
+    if settings.enable_crypto:
+        from .nodes.crypto_research import crypto_research
+
+        g.add_node("crypto", crypto_research)
+        g.add_edge("ingestion", "crypto")
+        g.add_edge("crypto", "critic")
+
     g.add_edge("critic", "human_approval")
 
     g.add_conditional_edges(

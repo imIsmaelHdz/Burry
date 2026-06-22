@@ -16,7 +16,6 @@ from ..models import get_llm
 from ..prompts import load_prompt
 from ..risk import limits
 from ..state import TradingState
-from ..tools import alpaca
 
 
 class _Order(BaseModel):
@@ -56,14 +55,15 @@ def critic_review(state: TradingState) -> TradingState:
     proposed = [o.model_dump() for o in result.orders]
 
     # Deterministic risk gate.
+    # Account/positions are optional — graph keeps running without Alpaca keys.
     try:
-        account = alpaca.get_account()
-        positions = alpaca.get_positions()
-    except Exception as exc:  # keep the graph running offline / without keys
-        account, positions = {"equity": 0.0}, []
-        log_extra = [f"WARN: could not load account/positions: {exc}"]
-    else:
+        from ..tools import alpaca as _alpaca
+        account = _alpaca.get_account()
+        positions = _alpaca.get_positions()
         log_extra = []
+    except Exception as exc:
+        account, positions = {"equity": 0.0}, []
+        log_extra = [f"WARN: Alpaca account unavailable — risk check uses zero equity: {exc}"]
 
     passed, violations = limits.check_orders(proposed, account, positions)
 

@@ -16,12 +16,30 @@ class Settings(BaseSettings):
         env_file=".env", env_file_encoding="utf-8", extra="ignore"
     )
 
-    # LLM Provider
-    llm_provider: Literal["anthropic", "openai"] = "anthropic"
+    # LLM Provider — "anthropic" | "openai" | "ollama" | "gemini"
+    llm_provider: Literal["anthropic", "openai", "ollama", "gemini"] = "anthropic"
     anthropic_api_key: str | None = None
     anthropic_model: str = "claude-opus-4-8"
     openai_api_key: str | None = None
     openai_model: str = "gpt-4o"
+
+    # Gemini (Google AI Studio)
+    gemini_api_key: str | None = None
+    gemini_model: str = "gemini-2.5-flash"          # default for all agents
+    gemini_model_technical: str = ""                 # override per role
+    gemini_model_macro: str = ""
+    gemini_model_critic: str = "gemini-2.5-flash"   # bump critic to flash too
+    # Open WebUI API path: <OLLAMA_BASE_URL>/v1  (set base to .../ollama)
+    # API key: Open WebUI account token (Profile → Settings → Account → API Keys)
+    ollama_base_url: str = "http://localhost:11434"
+    ollama_api_key: str = "ollama"        # raw Ollama needs any non-empty string; Open WebUI needs your account token
+    ollama_model: str = "qwen2.5:3b"
+    # Per-role model overrides — leave empty to fall back to ollama_model.
+    # Format:  OLLAMA_MODEL_<ROLE>=<model_name>
+    # Example: OLLAMA_MODEL_CRITIC=qwen2.5:7b
+    ollama_model_technical: str = ""
+    ollama_model_macro: str = ""
+    ollama_model_critic: str = ""
 
     # Alpaca
     alpaca_api_key: str | None = None
@@ -34,6 +52,10 @@ class Settings(BaseSettings):
     # Massive (optional extra research step — off unless explicitly enabled)
     massive_api_key: str | None = None
     enable_massive: bool = False
+
+    # Crypto (Binance Futures F1-F5 protocol — off unless explicitly enabled)
+    enable_crypto: bool = False
+    crypto_capital: float = 1000.0   # default session capital in USD
 
     # Risk Limits
     max_position_pct: float = 0.10

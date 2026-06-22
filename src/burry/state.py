@@ -18,9 +18,23 @@ class ProposedOrder(TypedDict):
     rationale: str
 
 
+class CryptoOrder(TypedDict):
+    symbol:      str
+    side:        str            # "long" | "short"
+    leverage:    int
+    notional:    float          # 10% of declared capital
+    entry_price: float
+    sl:          float
+    tp1:         float
+    tp2:         float
+    rationale:   str
+    success_pct: float
+
+
 class TradingState(TypedDict, total=False):
     # Inputs
     tickers: list[str]
+    crypto_capital: float       # declared capital for the crypto session
 
     # Ingestion output (raw, per source)
     ohlcv: dict[str, Any]
@@ -35,6 +49,12 @@ class TradingState(TypedDict, total=False):
     # Optional Massive research step (only populated when ENABLE_MASSIVE)
     massive_data: dict[str, Any]
     massive_analysis: str
+
+    # Crypto research (Binance Futures F1-F5, only when ENABLE_CRYPTO)
+    crypto_macro:    dict[str, Any]   # F1 macro snapshot
+    crypto_data:     dict[str, Any]   # F2-F3 candidates + indicators
+    crypto_analysis: str              # full F1-F5 LLM analysis
+    crypto_orders:   list[CryptoOrder]
 
     # Critic / Risk
     investment_memo: str
