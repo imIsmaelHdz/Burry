@@ -16,7 +16,7 @@ def ingest(state: TradingState) -> TradingState:
     s = get_settings()
     log = []
 
-    # ── Alpaca OHLCV (optional) ───────────────────────────────────────────────
+    # Alpaca OHLCV (optional)
     if s.alpaca_api_key:
         try:
             from ..tools import alpaca
@@ -29,7 +29,7 @@ def ingest(state: TradingState) -> TradingState:
         ohlcv = {"bars": []}
         log.append("SKIP: Alpaca OHLCV — no API key configured")
 
-    # ── Sentiment / news (optional — uses Alpaca news client) ────────────────
+    # Sentiment / news (optional — uses Alpaca news client)
     if s.alpaca_api_key:
         try:
             from ..tools import sentiment
@@ -43,7 +43,7 @@ def ingest(state: TradingState) -> TradingState:
         news = {t: {"headline_count": 0, "headlines": []} for t in tickers}
         log.append("SKIP: Alpaca sentiment — will use Finnhub news instead")
 
-    # ── Finnhub fundamentals (always runs) ───────────────────────────────────
+    # Finnhub fundamentals (always runs)
     fundamentals = finnhub.fetch_company_data(tickers)
     log.append(f"ingested Finnhub data for {', '.join(tickers)}")
 

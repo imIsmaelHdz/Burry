@@ -31,7 +31,7 @@ def _truncate(obj: object, limit: int = 8000) -> str:
 def crypto_research(state: TradingState) -> TradingState:
     from ..tools import binance as bn
 
-    # ── F1: macro context ────────────────────────────────────────────────────
+    # F1: macro context
     try:
         macro = bn.get_macro_context()
     except Exception as exc:
@@ -41,13 +41,13 @@ def crypto_research(state: TradingState) -> TradingState:
             "log": [f"WARN: crypto research skipped: {exc}"],
         }
 
-    # ── F2: scan candidates ──────────────────────────────────────────────────
+    # F2: scan candidates
     try:
         candidates = bn.scan_candidates(top_n=50)
     except Exception as exc:
         candidates = {"longs": [], "shorts": [], "error": str(exc)}
 
-    # ── F3: detailed 4H indicators for each candidate ───────────────────────
+    # F3: detailed 4H indicators for each candidate
     detailed: dict[str, list] = {"longs": [], "shorts": []}
     for side in ("longs", "shorts"):
         for c in candidates.get(side, []):
@@ -57,7 +57,7 @@ def crypto_research(state: TradingState) -> TradingState:
             except Exception as exc:
                 detailed[side].append({"symbol": c["symbol"], "error": str(exc)})
 
-    # ── LLM: F1 → F5 analysis + order proposals ─────────────────────────────
+    # LLM: F1 → F5 analysis + order proposals
     prompt = load_prompt("crypto_research")
     llm = get_llm(prompt.role, temperature=prompt.temperature or 0.1)
 

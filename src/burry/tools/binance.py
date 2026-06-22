@@ -24,7 +24,7 @@ _COINGECKO    = "https://api.coingecko.com/api/v3"
 _TIMEOUT = 10  # seconds
 
 
-# ── helpers ──────────────────────────────────────────────────────────────────
+# helpers
 
 def _get(url: str, params: dict | None = None) -> Any:
     r = requests.get(url, params=params, timeout=_TIMEOUT)
@@ -75,7 +75,7 @@ def _rsi(closes: list[float], period: int = 14) -> list[float]:
     return result
 
 
-# ── F1: macro context ─────────────────────────────────────────────────────────
+# F1: macro context
 
 def get_btc_price() -> dict[str, Any]:
     """Current BTC/USDT price and 24h change from Binance spot."""
@@ -145,7 +145,7 @@ def get_macro_context() -> dict[str, Any]:
     }
 
 
-# ── F2: pair scanning ─────────────────────────────────────────────────────────
+# F2: pair scanning
 
 def get_top_futures_tickers(limit: int = 50) -> list[dict[str, Any]]:
     """Top perpetual futures by 24h quote volume."""
@@ -176,7 +176,7 @@ def get_funding_rates(symbols: list[str] | None = None) -> dict[str, float]:
     return rates
 
 
-# ── F3: technical indicators ──────────────────────────────────────────────────
+# F3: technical indicators
 
 def get_4h_indicators(symbol: str, candles: int = 250) -> dict[str, Any]:
     """OHLCV + EMA20/50/200 + RSI(14) from 4H candles for a symbol.

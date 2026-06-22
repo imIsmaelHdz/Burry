@@ -19,7 +19,7 @@ import os
 import sys
 from datetime import datetime
 
-# ── path setup ───────────────────────────────────────────────────────────────
+# path setup
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 sys.path.insert(0, os.path.join(ROOT, "src"))
 
@@ -27,7 +27,7 @@ from dotenv import load_dotenv
 load_dotenv(os.path.join(ROOT, ".env"))
 
 
-# ── formatting helpers ────────────────────────────────────────────────────────
+# formatting helpers
 
 RESET  = "\033[0m"
 BOLD   = "\033[1m"
@@ -62,7 +62,7 @@ def fmt_change(change, pct) -> str:
     return f"{color}{arrow} {change:+.2f}  ({pct:+.2f}%){RESET}"
 
 
-# ── section printers ──────────────────────────────────────────────────────────
+# section printers
 
 def print_profile(symbol: str, data: dict) -> None:
     p = data.get("profile", {})
@@ -179,7 +179,7 @@ def print_insider(symbol: str, data: dict) -> None:
         print(f"  {e.get('month', '?'):<12} {color}{mspr:>8.2f}{RESET} {change:>10.0f}")
 
 
-# ── main ──────────────────────────────────────────────────────────────────────
+# main
 
 def main() -> None:
     parser = argparse.ArgumentParser(
