@@ -10,11 +10,22 @@ import operator
 from typing import Annotated, Any, TypedDict
 
 
+class Position(TypedDict):
+    """A manually declared existing holding passed into the graph at runtime."""
+    symbol:      str
+    side:        str        # "long" | "short"
+    qty:         float
+    entry_price: float
+    entry_date:  str        # ISO date string, e.g. "2025-01-15"
+    notional:    float      # qty * entry_price
+
+
 class ProposedOrder(TypedDict):
-    symbol: str
-    side: str          # "buy" | "sell"
-    qty: float | None
-    notional: float | None
+    symbol:    str
+    side:      str          # "buy" | "sell"
+    action:    str          # "open" | "add" | "trim" | "exit" | "hold"
+    qty:       float | None
+    notional:  float | None
     rationale: str
 
 
@@ -35,11 +46,13 @@ class TradingState(TypedDict, total=False):
     # Inputs
     tickers: list[str]
     crypto_capital: float       # declared capital for the crypto session
+    current_positions: list[Position]  # manually declared existing holdings
 
     # Ingestion output (raw, per source)
-    ohlcv: dict[str, Any]
-    sentiment: dict[str, Any]
-    finnhub: dict[str, Any]
+    ohlcv:             dict[str, Any]
+    sentiment:         dict[str, Any]
+    finnhub:           dict[str, Any]
+    earnings_calendar: dict[str, Any]   # upcoming earnings per ticker (14-day window)
 
     # Research (the agents run in parallel, distinct keys so
     # there is no write conflict at the fan-in)

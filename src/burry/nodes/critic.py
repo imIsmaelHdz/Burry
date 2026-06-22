@@ -21,6 +21,7 @@ from ..state import TradingState
 class _Order(BaseModel):
     symbol: str
     side: str = Field(description='"buy" or "sell"')
+    action: str = Field(description='"open" | "add" | "trim" | "exit" | "hold"', default="open")
     qty: float | None = Field(default=None, description="share quantity, or null")
     notional: float | None = Field(default=None, description="dollar amount, or null")
     rationale: str
@@ -38,11 +39,17 @@ def critic_review(state: TradingState) -> TradingState:
     )
 
     payload = {
-        "tickers": state["tickers"],
+        "tickers":            state["tickers"],
         "technical_analysis": state.get("technical_analysis"),
-        "macro_analysis": state.get("macro_analysis"),
+        "macro_analysis":     state.get("macro_analysis"),
     }
-    # Optional Massive second-opinion, included only when that step ran.
+    # Existing positions — give the critic full context on open holdings
+    if state.get("current_positions"):
+        payload["current_positions"] = state["current_positions"]
+    # Earnings calendar — flag overnight risk
+    if state.get("earnings_calendar"):
+        payload["earnings_calendar"] = state["earnings_calendar"]
+    # Optional Massive second-opinion
     if state.get("massive_analysis"):
         payload["massive_analysis"] = state["massive_analysis"]
     result: _Memo = llm.invoke(

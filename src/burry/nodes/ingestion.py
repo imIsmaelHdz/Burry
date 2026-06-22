@@ -47,6 +47,18 @@ def ingest(state: TradingState) -> TradingState:
     fundamentals = finnhub.fetch_company_data(tickers)
     log.append(f"ingested Finnhub data for {', '.join(tickers)}")
 
+    # Earnings calendar — 14-day lookahead for overnight risk flagging
+    try:
+        earnings = finnhub.fetch_earnings_calendar(tickers, lookahead_days=14)
+        flagged  = [t for t, v in earnings.items() if v is not None]
+        if flagged:
+            log.append(f"earnings in next 14 days: {', '.join(flagged)}")
+        else:
+            log.append("no earnings in next 14 days")
+    except Exception as exc:
+        earnings = {t: None for t in tickers}
+        log.append(f"WARN: earnings calendar failed: {exc}")
+
     # Backfill sentiment headlines from Finnhub news when Alpaca is absent
     if not s.alpaca_api_key:
         for ticker in tickers:
@@ -55,8 +67,9 @@ def ingest(state: TradingState) -> TradingState:
             news[ticker] = {"headline_count": len(headlines), "headlines": headlines[:20]}
 
     return {
-        "ohlcv": ohlcv,
-        "sentiment": news,
-        "finnhub": fundamentals,
-        "log": log,
+        "ohlcv":             ohlcv,
+        "sentiment":         news,
+        "finnhub":           fundamentals,
+        "earnings_calendar": earnings,
+        "log":               log,
     }
