@@ -6,6 +6,7 @@ langchain-core>=0.3.0
 # LLM providers (configurable — see src/burry/models.py)
 langchain-anthropic>=0.3.0
 langchain-openai>=0.2.0
+langchain-google-genai>=2.0  # default provider (LLM_PROVIDER=gemini)
 
 # Market data + execution
 alpaca-py>=0.33.0
