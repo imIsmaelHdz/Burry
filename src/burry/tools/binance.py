@@ -26,10 +26,17 @@ _TIMEOUT = 10  # seconds
 
 # helpers
 
-def _get(url: str, params: dict | None = None) -> Any:
-    r = requests.get(url, params=params, timeout=_TIMEOUT)
-    r.raise_for_status()
-    return r.json()
+def _get(url: str, params: dict | None = None, retries: int = 3) -> Any:
+    import time
+    for attempt in range(retries):
+        r = requests.get(url, params=params, timeout=_TIMEOUT)
+        if r.status_code == 429:
+            wait = 2 ** attempt   # 1s, 2s, 4s
+            time.sleep(wait)
+            continue
+        r.raise_for_status()
+        return r.json()
+    r.raise_for_status()   # raise on final attempt
 
 
 def _ema(values: list[float], period: int) -> list[float]:
